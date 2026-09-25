@@ -5,8 +5,8 @@
    If you want to change how the game LOOKS, this is the only file you  
    need. If you want to change how it BEHAVES, this is the wrong file.  
   
-   The game now has a dark futuristic look: neon glowing player,  
-   glowing magenta spikes, and a gradient background.  
+   Dark futuristic look: gradient sky, neon city skyline in the  
+   distance, glowing cyan player, glowing magenta spikes.  
    ===================================================================== */  
   
 var Draw = {  
@@ -41,7 +41,45 @@ Draw.everything = function () {
   ctx.fillStyle = bg;  
   ctx.fillRect(0, 0, CONFIG.CANVAS_W, CONFIG.CANVAS_H);  
   
-  // 2. shift everything left so the camera looks like it moved right  
+  // 2. a neon city skyline in the distance (parallax: scrolls slower)  
+  ctx.save();  
+  var horizon = CONFIG.CANVAS_H - 60;  
+  for (var i = 0; i < 20; i++) {  
+    // each building's position and height, from a repeating pattern  
+    var bx = (i * 90) - (Draw.cameraX * 0.4) % (20 * 90);  
+    if (bx < -90) { bx = bx + 20 * 90; }  
+    var bh = 60 + ((i * 137) % 180);           // building height varies  
+    var bw = 50 + ((i * 71) % 30);             // building width varies  
+  
+    // the building silhouette, dark against the sky  
+    ctx.fillStyle = "#0c1224";  
+    ctx.fillRect(bx, horizon - bh, bw, bh);  
+  
+    // lit windows — neon dots on the dark towers  
+    ctx.fillStyle = "#00e4fd";  
+    var wx, wy;  
+    for (var wRow = 0; wRow < Math.floor(bh / 24); wRow++) {  
+      for (var wCol = 0; wCol < Math.floor(bw / 20); wCol++) {  
+        // only some windows are lit, in a fixed pattern  
+        if (((i * 13 + wRow * 7 + wCol * 3) % 4) === 0) {  
+          wx = bx + 8 + wCol * 20;  
+          wy = horizon - bh + 10 + wRow * 24;  
+          ctx.fillRect(wx, wy, 4, 6);  
+        }  
+      }  
+    }  
+  }  
+  
+  // a glowing magenta skyline edge  
+  ctx.strokeStyle = "#ff2fd6";  
+  ctx.lineWidth = 2;  
+  ctx.beginPath();  
+  ctx.moveTo(0, horizon);  
+  ctx.lineTo(CONFIG.CANVAS_W, horizon);  
+  ctx.stroke();  
+  ctx.restore();  
+  
+  // 3. shift everything left so the camera looks like it moved right  
   ctx.save();  
   ctx.translate(-Draw.cameraX, 0);  
   
@@ -135,18 +173,14 @@ Draw.player = function () {
   ctx.shadowColor = "#00e4fd";  
   ctx.shadowBlur = 20;  
   
-  // the circle — a two-color neon gradient  
-var glow = ctx.createLinearGradient(centerX - r, centerY - r, centerX + r, centerY + r);  
-glow.addColorStop(0, "#00e4fd");   // cyan on the top-left  
-glow.addColorStop(1, "#ff2fd6");   // magenta on the bottom-right  
-ctx.fillStyle = glow;  
-ctx.strokeStyle = "#ffffff";       // white outline so both colors pop  
-ctx.lineWidth = CONFIG.LINE_WIDTH;  
-ctx.beginPath();  
-ctx.arc(centerX, centerY, r, 0, Math.PI * 2);  
-ctx.fill();  
-ctx.stroke();  
-
+  // the circle  
+  ctx.fillStyle = "#00e4fd";  
+  ctx.strokeStyle = "#b3f4ff";  
+  ctx.lineWidth = CONFIG.LINE_WIDTH;  
+  ctx.beginPath();  
+  ctx.arc(centerX, centerY, r, 0, Math.PI * 2);  
+  ctx.fill();  
+  ctx.stroke();  
   
   // the off-center dot. its position depends on how far we have rolled.  
   var dotX = centerX + Math.cos(Player.angle) * r * CONFIG.DOT_DISTANCE;  
@@ -159,3 +193,4 @@ ctx.stroke();
   
   ctx.restore();  
 };  
+
