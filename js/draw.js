@@ -135,14 +135,18 @@ Draw.player = function () {
   ctx.shadowColor = "#00e4fd";  
   ctx.shadowBlur = 20;  
   
-  // the circle  
-  ctx.fillStyle = "#00e4fd";  
-  ctx.strokeStyle = "#b3f4ff";  
-  ctx.lineWidth = CONFIG.LINE_WIDTH;  
-  ctx.beginPath();  
-  ctx.arc(centerX, centerY, r, 0, Math.PI * 2);  
-  ctx.fill();  
-  ctx.stroke();  
+  // the circle — a two-color neon gradient  
+var glow = ctx.createLinearGradient(centerX - r, centerY - r, centerX + r, centerY + r);  
+glow.addColorStop(0, "#00e4fd");   // cyan on the top-left  
+glow.addColorStop(1, "#ff2fd6");   // magenta on the bottom-right  
+ctx.fillStyle = glow;  
+ctx.strokeStyle = "#ffffff";       // white outline so both colors pop  
+ctx.lineWidth = CONFIG.LINE_WIDTH;  
+ctx.beginPath();  
+ctx.arc(centerX, centerY, r, 0, Math.PI * 2);  
+ctx.fill();  
+ctx.stroke();  
+
   
   // the off-center dot. its position depends on how far we have rolled.  
   var dotX = centerX + Math.cos(Player.angle) * r * CONFIG.DOT_DISTANCE;  

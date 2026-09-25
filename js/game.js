@@ -42,13 +42,13 @@ Game.update = function () {
 
   if (Player.isDead()) {
     Game.mode = "dead";
-    Game.showMessage("You hit something. Press R to try again.");
+    Game.showMessage("You 😵Died. Press R to Respawn.");
     return;
   }
 
   if (Player.hasWon()) {
     Game.mode = "won";
-    Game.showMessage("You made it. Press R to play again.");
+    Game.showMessage("You 🎉Won🎉. Press R to play again.");
     return;
   }
 };
